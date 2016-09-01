@@ -20,8 +20,15 @@ except ImportError:
     import http.client as httplib
 
 import eventlet
-from oslo_log import log as logging
-from oslo_serialization import jsonutils
+try:
+    from oslo_log import log as logging
+except Exception:
+    import logging
+
+try:
+    from oslo_serialization import jsonutils
+except Exception:
+    import json as jsonutils
 
 from fortiosclient._i18n import _LI, _LW
 from fortiosclient.common import constants as csts

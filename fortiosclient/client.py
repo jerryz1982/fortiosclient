@@ -16,8 +16,15 @@
 #
 
 import jinja2
-from oslo_log import log as logging
-from oslo_serialization import jsonutils
+try:
+    from oslo_log import log as logging
+except Exception:
+    import logging
+
+try:
+    from oslo_serialization import jsonutils
+except Exception:
+    import json as jsonutils
 
 from fortiosclient._i18n import _LE, _LW
 from fortiosclient.common import constants as csts

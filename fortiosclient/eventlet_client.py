@@ -19,7 +19,10 @@ import time
 
 import eventlet
 eventlet.monkey_patch()
-from oslo_log import log as logging
+try:
+    from oslo_log import log as logging
+except Exception:
+    import logging
 
 from fortiosclient import base
 from fortiosclient.common import constants as csts

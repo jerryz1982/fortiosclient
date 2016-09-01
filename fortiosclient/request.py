@@ -24,9 +24,16 @@ except ImportError:
     from http import client as httpclient
 import time
 
-from oslo_log import log as logging
-from oslo_serialization import jsonutils
-from oslo_utils import excutils
+try:
+    from oslo_log import log as logging
+except Exception:
+    import logging
+
+try:
+    from oslo_serialization import jsonutils
+except Exception:
+    import json as jsonutils
+
 import six
 import six.moves.urllib.parse as urlparse
 
@@ -134,10 +141,10 @@ class ApiRequest(object):
                                "body": body, "headers": headers})
                     conn.request(self._method, url, body, headers)
                 except Exception as e:
-                    with excutils.save_and_reraise_exception():
-                        LOG.warning(
-                            _LW("[%(rid)d] Exception issuing request: %(e)s"),
-                            {'rid': self._rid(), 'e': e})
+                    LOG.warning(
+                        _LW("[%(rid)d] Exception issuing request: %(e)s"),
+                        {'rid': self._rid(), 'e': e})
+                    raise e
 
                 response = conn.getresponse()
                 response.body = response.read()

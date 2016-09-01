@@ -23,7 +23,11 @@ except ImportError:
     from http import cookies as Cookie
 import time
 
-from oslo_log import log as logging
+try:
+    from oslo_log import log as logging
+except Exception:
+    import logging
+
 import six
 
 from fortiosclient._i18n import _LE, _LI, _LW
