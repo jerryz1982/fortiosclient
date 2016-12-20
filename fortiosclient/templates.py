@@ -1051,3 +1051,53 @@ GET_FIREWALL_SERVICE = """
     "method": "GET"
 }
 """
+
+# requirement for splunk AR plugin to revoke user
+GET_USER_GROUP = """
+{
+    {% if name is defined %}
+        {% if vdom is defined %}
+            "path": "/api/v2/cmdb/user/group/{{ name }}/?vdom={{ vdom }}",
+        {% else %}
+            "path": "/api/v2/cmdb/user/group/{{ name }}/",
+        {% endif %}
+    {% else %}
+        {% if vdom is defined %}
+            "path": "/api/v2/cmdb/user/group/?vdom={{ vdom }}",
+        {% else %}
+            "path": "/api/v2/cmdb/user/group/",
+        {% endif %}
+    {% endif %}
+    "method": "GET"
+
+}
+"""
+
+SET_USER_GROUP = """
+{
+    {% if vdom is defined %}
+        "path": "/api/v2/cmdb/user/group/{{ name }}/?vdom={{ vdom }}",
+    {% else %}
+        "path": "/api/v2/cmdb/user/group/{{ name }}",
+    {% endif %}
+    "method": "PUT",
+    "body": {
+        {% if member is defined %}
+            "member": [
+                {% for m in member[:-1] %}
+                    {
+                        "name": "{{ m }}",
+                        "q_origin_key": "{{ m }}"
+                    },
+                {% endfor %}
+                    {
+                        "name": "{{ member[-1] }}",
+                        "q_origin_key": "{{ member[-1] }}"
+                    }
+             ],
+        {% endif %}
+        "name": "{{ name }}"
+    }
+}
+
+"""
