@@ -1082,7 +1082,7 @@ SET_USER_GROUP = """
     {% endif %}
     "method": "PUT",
     "body": {
-        {% if member is defined %}
+        {% if member| length > 0 %}
             "member": [
                 {% for m in member[:-1] %}
                     {
@@ -1095,6 +1095,8 @@ SET_USER_GROUP = """
                         "q_origin_key": "{{ member[-1] }}"
                     }
              ],
+        {% else %}
+            "member": [],
         {% endif %}
         "name": "{{ name }}"
     }
