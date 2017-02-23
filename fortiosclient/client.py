@@ -44,7 +44,6 @@ class FortiosApiClient(eventlet_client.EventletApiClient):
     def __init__(self, api_providers, user, password,
                  concurrent_connections=csts.DEFAULT_CONCURRENT_CONNECTIONS,
                  gen_timeout=csts.GENERATION_ID_TIMEOUT,
-                 use_https=False,
                  connect_timeout=csts.DEFAULT_CONNECT_TIMEOUT,
                  http_timeout=csts.DEFAULT_HTTP_TIMEOUT,
                  retries=csts.DEFAULT_RETRIES,
@@ -61,7 +60,7 @@ class FortiosApiClient(eventlet_client.EventletApiClient):
         super(FortiosApiClient, self).__init__(
             api_providers, user, password,
             concurrent_connections=concurrent_connections,
-            gen_timeout=gen_timeout, use_https=use_https,
+            gen_timeout=gen_timeout,
             connect_timeout=connect_timeout)
 
         self._request_timeout = http_timeout * retries
