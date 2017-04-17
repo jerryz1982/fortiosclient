@@ -37,7 +37,6 @@ class EventletApiClient(base.ApiClientBase):
     def __init__(self, api_providers, user, password,
                  concurrent_connections=csts.DEFAULT_CONCURRENT_CONNECTIONS,
                  gen_timeout=csts.GENERATION_ID_TIMEOUT,
-                 use_https=True,
                  connect_timeout=csts.DEFAULT_CONNECT_TIMEOUT):
         '''Constructor
 
@@ -46,7 +45,6 @@ class EventletApiClient(base.ApiClientBase):
         :param user: login username.
         :param password: login password.
         :param concurrent_connections: total number of concurrent connections.
-        :param use_https: whether or not to use https for requests.
         :param connect_timeout: connection timeout in seconds.
         :param gen_timeout controls how long the generation id is kept
             if set to -1 the generation id is never timed out
@@ -60,7 +58,6 @@ class EventletApiClient(base.ApiClientBase):
         self._user = user
         self._password = password
         self._concurrent_connections = concurrent_connections
-        self._use_https = use_https
         self._connect_timeout = connect_timeout
         self._config_gen = None
         self._config_gen_ts = None
