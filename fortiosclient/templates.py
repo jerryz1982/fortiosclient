@@ -46,11 +46,7 @@ LOGOUT = """
 # Create VLAN
 ADD_VLAN_INTERFACE = """
 {
-    {% if vdom is defined %}
-        "path": "/api/v2/cmdb/system/interface?vdom={{ vdom }}",
-    {% else %}
-        "path": "/api/v2/cmdb/system/interface",
-    {% endif %}
+    "path": "/api/v2/cmdb/system/interface",
     "method": "POST",
     "body": {
             {% if name is defined %}
@@ -72,6 +68,11 @@ ADD_VLAN_INTERFACE = """
             {% if alias is defined %}
                 "alias": "{{ alias  }}",
             {% endif %}
+            {% if vdom is defined %}
+                "vdom": "{{ vdom }}",
+            {% else %}
+                "vdom": "root",
+            {% endif %}
             "ipv6": {
                 "ip6-extra-addr": []
             }
@@ -81,11 +82,7 @@ ADD_VLAN_INTERFACE = """
 
 SET_VLAN_INTERFACE = """
 {
-    {% if vdom is defined %}
-        "path": "/api/v2/cmdb/system/interface/{{ name }}?vdom={{ vdom }}",
-    {% else %}
-        "path": "/api/v2/cmdb/system/interface/{{ name }}
-    {% endif %}
+    "path": "/api/v2/cmdb/system/interface/{{ name }}
     "method": "PUT",
     "body": {
             {% if ip is defined and ip != None %}
@@ -115,7 +112,11 @@ SET_VLAN_INTERFACE = """
             {% if vlanid is defined %}
                 "vlanid": "{{ vlanid }}",
             {% endif %}
-
+            {% if vdom is defined %}
+                "vdom": "{{ vdom }}"
+            {% else %}
+                "vdom": "root"
+            {% endif %}
     }
 }
 """
