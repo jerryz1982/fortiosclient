@@ -272,7 +272,7 @@ ADD_VDOM = """
     "path":"/api/v2/cmdb/system/vdom/",
     "method": "POST",
     "body": {
-        "name": "vdom",
+        "name": "{{ name }}"
     }
 }
 """
