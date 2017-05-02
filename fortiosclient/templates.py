@@ -49,6 +49,7 @@ ADD_VLAN_INTERFACE = """
     "path": "/api/v2/cmdb/system/interface",
     "method": "POST",
     "body": {
+        "json": {
             {% if name is defined %}
                 "name": "{{ name }}",
             {% else %}
@@ -76,6 +77,7 @@ ADD_VLAN_INTERFACE = """
             "ipv6": {
                 "ip6-extra-addr": []
             }
+        }
     }
 }
 """
@@ -272,7 +274,9 @@ ADD_VDOM = """
     "path":"/api/v2/cmdb/system/vdom/",
     "method": "POST",
     "body": {
-        "name": "{{ name }}"
+        "json": {
+            "name": "{{ name }}"
+        }
     }
 }
 """
@@ -296,7 +300,9 @@ ADD_VDOM_LINK = """
     "path":"/api/v2/cmdb/system/vdom-link",
     "method": "POST",
     "body": {
+        "json": {
             "name":"{{ name }}"
+        }
     }
 }
 """
@@ -389,6 +395,7 @@ ADD_FIREWALL_POLICY = """
     {% endif %}
     "method": "POST",
     "body": {
+        "json": {
             "srcintf": [
                 {
                     {% if srcintf is defined %}
@@ -484,6 +491,7 @@ ADD_FIREWALL_POLICY = """
             {% else %}
                 "comments": ""
             {% endif %}
+        }
     }
 }
 """
@@ -497,6 +505,7 @@ SET_FIREWALL_POLICY = """
     {% endif %}
     "method": "PUT",
     "body": {
+        "json": {
             {% if srcintf is defined %}
                 "srcintf": [
                     {
@@ -575,6 +584,7 @@ SET_FIREWALL_POLICY = """
             {% endif %}
             "schedule": "always"
         }
+    }
 }
 """
 
@@ -638,12 +648,14 @@ ADD_FIREWALL_VIP = """
     {% endif %}
     "method": "POST",
     "body": {
-        "name": "{{ name }}",
-        "extip": "{{ extip }}",
-        "extintf": "{{ extintf }}",
-        "mappedip": [{
-                "range": "{{ mappedip }}"
-        }]
+        "json": {
+            "name": "{{ name }}",
+            "extip": "{{ extip }}",
+            "extintf": "{{ extintf }}",
+            "mappedip": [{
+                    "range": "{{ mappedip }}"
+            }]
+        }
     }
 }
 """
@@ -687,6 +699,7 @@ ADD_FIREWALL_IPPOOL = """
     {% endif %}
     "method": "POST",
     "body": {
+        "json": {
             "startip": "{{ startip }}",
             {% if endip is defined %}
                 "endip": "{{ endip }}",
@@ -706,6 +719,7 @@ ADD_FIREWALL_IPPOOL = """
             {% else %}
                 "name": "{{ startip }}"
             {% endif %}
+        }
     }
 }
 """
@@ -750,6 +764,7 @@ ADD_FIREWALL_ADDRESS = """
     {% endif %}
     "method": "POST",
     "body": {
+        "json": {
             {% if associated_interface is defined %}
                 "associated-interface": "{{ associated_interface }}",
             {% endif %}
@@ -758,6 +773,7 @@ ADD_FIREWALL_ADDRESS = """
             {% endif %}
             "subnet": "{{ subnet }}",
             "name": "{{ name }}"
+        }
     }
 }
 """
@@ -771,6 +787,7 @@ SET_FIREWALL_ADDRESS = """
     {% endif %}
     "method": "PUT",
     "body": {
+        "json": {
             {% if associated_interface is defined %}
                 "associated-interface": "{{ associated_interface }}",
             {% endif %}
@@ -781,6 +798,7 @@ SET_FIREWALL_ADDRESS = """
                 "subnet": "{{ subnet }}",
             {% endif %}
             "name": "{{ name }}"
+        }
     }
 }
 """
@@ -825,6 +843,7 @@ ADD_FIREWALL_ADDRGRP = """
     {% endif %}
     "method": "POST",
     "body": {
+        "json": {
             "name": "{{ name }}",
             "member": [
             {% for member in members[:-1] %}
@@ -836,6 +855,7 @@ ADD_FIREWALL_ADDRGRP = """
                     "name": "{{ members[-1] }}"
                 }
             ]
+        }
     }
 }
 """
@@ -904,6 +924,7 @@ ADD_FIREWALL_SERVICE = """
     {% endif %}
     "method": "POST",
     "body": {
+        "json": {
             {% if protocol is defined %}
                 "protocol": "{{ protocol }}",
             {% else %}
@@ -928,6 +949,7 @@ ADD_FIREWALL_SERVICE = """
                 "comment": "{{ comment }}",
             {% endif %}
             "name": "{{ name }}"
+        }
     }
 }
 """
@@ -942,6 +964,7 @@ SET_FIREWALL_SERVICE = """
     {% endif %}
     "method": "PUT",
     "body": {
+        "json": {
             {% if protocol is defined %}
                 "protocol": "{{ protocol }}",
             {% endif %}
@@ -971,6 +994,7 @@ SET_FIREWALL_SERVICE = """
             {% endif %}
             "name": "{{ name }}"
         }
+    }
 }
 """
 
@@ -1034,23 +1058,25 @@ SET_USER_GROUP = """
     {% endif %}
     "method": "PUT",
     "body": {
-        {% if member| length > 0 %}
+        "json": {
+            {% if member| length > 0 %}
             "member": [
                 {% for m in member[:-1] %}
-                    {
-                        "name": "{{ m }}",
-                        "q_origin_key": "{{ m }}"
-                    },
+                {
+                    "name": "{{ m }}",
+                    "q_origin_key": "{{ m }}"
+                },
                 {% endfor %}
-                    {
-                        "name": "{{ member[-1] }}",
-                        "q_origin_key": "{{ member[-1] }}"
-                    }
-             ],
-        {% else %}
+                {
+                    "name": "{{ member[-1] }}",
+                    "q_origin_key": "{{ member[-1] }}"
+                }
+            ],
+            {% else %}
             "member": [],
-        {% endif %}
-        "name": "{{ name }}"
+            {% endif %}
+            "name": "{{ name }}"
+        }
     }
 }
 
