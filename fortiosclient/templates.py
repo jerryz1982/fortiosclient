@@ -82,7 +82,7 @@ ADD_VLAN_INTERFACE = """
 
 SET_VLAN_INTERFACE = """
 {
-    "path": "/api/v2/cmdb/system/interface/{{ name }}
+    "path": "/api/v2/cmdb/system/interface/{{ name }},
     "method": "PUT",
     "body": {
             {% if ip is defined and ip != None %}
