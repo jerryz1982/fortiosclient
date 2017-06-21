@@ -268,13 +268,14 @@ SET_DHCP_SERVER_RSV_ADDR = """
 }
 """
 
-
+# (TODO) remove short-name when 5.6 has a stable release for the fix
 ADD_VDOM = """
 {
     "path":"/api/v2/cmdb/system/vdom/",
     "method": "POST",
     "body": {
         "json": {
+            "short-name": "{{ name }}",
             "name": "{{ name }}"
         }
     }
