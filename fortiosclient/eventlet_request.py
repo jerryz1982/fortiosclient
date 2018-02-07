@@ -156,8 +156,7 @@ class EventletApiRequest(request.ApiRequest):
                 self._request_error = None
                 response = req
             else:
-                LOG.info(_LI('[%(rid)d] Error while handling request: '
-                             '%(req)s'),
+                LOG.debug('[%(rid)d] Error while handling request: %(req)s',
                          {'rid': self._rid(), 'req': req})
                 self._request_error = req
                 response = None
