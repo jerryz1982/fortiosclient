@@ -30,7 +30,7 @@ except Exception:
 
 import six
 
-from fortiosclient._i18n import _LE, _LI, _LW
+from fortiosclient._i18n import _LE, _LI
 import fortiosclient as api_client
 
 
@@ -181,10 +181,10 @@ class ApiClientBase(object):
 
         if bad_state:
             # Reconnect to provider.
-            LOG.warning(_LW("[%(rid)d] Connection returned in bad state, "
-                            "reconnecting to %(conn)s"),
-                        {'rid': rid,
-                         'conn': api_client.ctrl_conn_to_str(http_conn)})
+            LOG.debug("[%(rid)d] Connection returned in bad state, "
+                      "reconnecting to %(conn)s",
+                      {'rid': rid,
+                       'conn': api_client.ctrl_conn_to_str(http_conn)})
             http_conn.close()
             http_conn = self._create_connection(*self._conn_params(http_conn))
             conns = []

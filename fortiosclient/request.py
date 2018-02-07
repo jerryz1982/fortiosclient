@@ -217,10 +217,11 @@ class ApiRequest(object):
                 msg = str(e)
             if response is None:
                 elapsed_time = time.time() - issued_time
-            LOG.warn(_LW("[%(rid)d] Failed request '%(conn)s': '%(msg)s' "
-                         "(%(elapsed)s seconds)"),
-                     {'rid': self._rid(), 'conn': self._request_str(conn, url),
-                      'msg': msg, 'elapsed': elapsed_time})
+            LOG.debug("[%(rid)d] Failed request '%(conn)s': '%(msg)s' "
+                      "(%(elapsed)s seconds)",
+                      {'rid': self._rid(),
+                       'conn': self._request_str(conn, url),
+                       'msg': msg, 'elapsed': elapsed_time})
             self._request_error = e
             is_conn_error = True
             return e

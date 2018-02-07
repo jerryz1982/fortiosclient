@@ -639,6 +639,91 @@ MOVE_FIREWALL_POLICY = """
 }
 """
 
+SET_FIREWALL_VIRT_SERVER = """
+{
+    {% if vdom is defined %}
+        "path":"/api/v2/cmdb/firewall/vip/{{ name }}?vdom={{ vdom }}",
+    {% else %}
+        "path":"/api/v2/cmdb/firewall/vip/{{ name }}?vdom=root",
+    {% endif %}
+    "method": "PUT",
+    "body": {
+        "json": {
+            {% if extip is defined %}
+                "extip": "{{ extip }}",
+            {% endif %}
+            {% if extport is defined %}
+                "extport": {{ extport }},
+            {% endif %}
+            {% if realservers is defined %}
+                "realservers": {{ realservers }}
+            {% endif %}
+
+        }
+    }
+}
+"""
+
+ADD_FIREWALL_REAL_SERVER = """
+{
+    {% if vdom is defined %}
+        "path":"/api/v2/cmdb/firewall/vip/{{ virt_server_name }}/realservers?vdom={{ vdom }}",
+    {% else %}
+        "path":"/api/v2/cmdb/firewall/vip/{{ virt_server_name }}/realservers?vdom=root",
+    {% endif %}
+    "method": "POST",
+    "body": {
+        "json": {
+            {% if ip is defined %}
+                "ip": "{{ ip }}",
+            {% endif %}
+            {% if port is defined %}
+                "port": {{ port }},
+            {% endif %}
+            {% if status is defined %}
+                "status": "{{ status }}"
+            {% endif %}
+
+        }
+    }
+}
+"""
+
+SET_FIREWALL_REAL_SERVER = """
+{
+    {% if vdom is defined %}
+        "path":"/api/v2/cmdb/firewall/vip/{{ virt_server_name }}/realservers/{{ name }}?vdom={{ vdom }}",
+    {% else %}
+        "path":"/api/v2/cmdb/firewall/vip/{{ virt_server_name }}/realservers/{{ name }}?vdom=root",
+    {% endif %}
+    "method": "PUT",
+    "body": {
+        "json": {
+            {% if ip is defined %}
+                "ip": "{{ ip }}",
+            {% endif %}
+            {% if port is defined %}
+                "port": {{ port }},
+            {% endif %}
+            {% if status is defined %}
+                "status": "{{ status }}"
+            {% endif %}
+
+        }
+    }
+}
+"""
+
+DELETE_FIREWALL_REAL_SERVER = """
+{
+    {% if vdom is defined %}
+        "path":"/api/v2/cmdb/firewall/vip/{{ virt_server_name }}/realservers/{{ name }}?vdom={{ vdom }}",
+    {% else %}
+        "path":"/api/v2/cmdb/firewall/vip/{{ virt_server_name }}/realservers/{{ name }}?vdom=root",
+    {% endif %}
+    "method": "DELETE"
+}
+"""
 
 ADD_FIREWALL_VIP = """
 {
@@ -1080,5 +1165,15 @@ SET_USER_GROUP = """
         }
     }
 }
+"""
 
+GET_MONITOR_LOAD_BALANCE = """
+{
+    {% if vdom is defined %}
+        "path": "/api/v2/monitor/firewall/load-balance?vdom={{ vdom }}&count={{ count }}",
+    {% else %}
+        "path": "/api/v2/monitor/firewall/load-balance?vdom=root&count={{ count }}",
+    {% endif %}
+    "method": "GET"
+}
 """
