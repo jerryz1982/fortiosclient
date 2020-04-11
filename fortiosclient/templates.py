@@ -680,6 +680,9 @@ ADD_FIREWALL_REAL_SERVER = """
             {% if port is defined %}
                 "port": {{ port }},
             {% endif %}
+            {% if max_connections is defined %}
+                "max-connections": {{ max_connections }},
+            {% endif %}
             {% if status is defined %}
                 "status": "{{ status }}"
             {% endif %}
@@ -704,6 +707,9 @@ SET_FIREWALL_REAL_SERVER = """
             {% endif %}
             {% if port is defined %}
                 "port": {{ port }},
+            {% endif %}
+            {% if max_connections is defined %}
+                "max-connections": {{ max_connections }},
             {% endif %}
             {% if status is defined %}
                 "status": "{{ status }}"
