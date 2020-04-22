@@ -37,7 +37,6 @@ from fortiosclient import templates
 LOG = logging.getLogger(__name__)
 
 
-@singleton.singleton
 class FortiosApiClient(eventlet_client.EventletApiClient):
     """The FortiOS API Client."""
 
