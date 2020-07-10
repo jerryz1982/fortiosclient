@@ -1183,3 +1183,59 @@ GET_MONITOR_LOAD_BALANCE = """
     "method": "GET"
 }
 """
+
+GET_USER_LOCAL = """
+{
+    {% if name is defined %}
+        "path": "/api/v2/cmdb/user/local/{{ name }}?vdom={{ vdom }}",
+    {% else %}
+        "path": "/api/v2/cmdb/user/local?vdom={{ vdom }}",
+    {% endif %}
+    "method": "GET"
+}
+"""
+
+ADD_USER_LOCAL = """
+{
+     "path": "/api/v2/cmdb/user/local?vdom={{ vdom }}",
+    "method": "POST",
+    "body": {
+        "json": {
+            "passwd": "{{ password }}",
+            "two-factor":"{{ two_factor }}",
+            "email-to":"{{ email }}",
+         {% if mobile_number is defined %}
+            "sms-phone": "{{ mobile_number }}",
+         {% endif %}
+            "name": "{{ name }}"
+        }
+    }
+}
+"""
+
+PUT_USER_LOCAL = """
+{
+    "path": "/api/v2/cmdb/user/local/{{ name }}?vdom={{ vdom }}",
+    "method": "PUT",
+    "body": {
+        "json": {
+            {% set options = {
+                'passwd': password,
+                'email-to': email,
+                'sms-phone': mobile_number
+            } %}
+            {% for k, v in options.iteritems() if v is defined and v %}
+               "{{ k }}": "{{ v }}",
+            {% endfor %}
+            "name": "{{ name }}"
+        }
+    }
+}
+"""
+
+DELETE_USER_LOCAL = """
+{
+    "path": "/api/v2/cmdb/user/local/{{ name }}?vdom={{ vdom }}",
+    "method": "DELETE"
+}
+"""
