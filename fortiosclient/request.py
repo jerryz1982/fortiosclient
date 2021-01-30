@@ -148,7 +148,8 @@ class ApiRequest(object):
 
                 response = conn.getresponse()
                 response.body = response.read()
-                response.headers = response.getheaders()
+                if six.PY2:
+                    response.headers = response.getheaders()
                 elapsed_time = time.time() - issued_time
                 LOG.debug("@@@@@@ [ _issue_request ] [%(rid)d] "
                           "Completed request '%(conn)s': "

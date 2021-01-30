@@ -110,7 +110,7 @@ class ApiClientBase(object):
             cookies = Cookie.SimpleCookie(cookie)
             for key, morsel in six.iteritems(cookies):
                 if "ccsrftoken" in morsel.key:
-                    morsel.coded_value = morsel.value
+                    #morsel.coded_value = morsel.value
                     fmt_headers["X-CSRFTOKEN"] = morsel.value
                     break
             fmt_headers["Cookie"] = cookies.output(header="").lstrip()

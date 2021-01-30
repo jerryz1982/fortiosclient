@@ -476,7 +476,7 @@ ADD_FIREWALL_POLICY = """
                 'ssl-ssh-profile': ssl_ssh_profile
             } %}
             {% set _utm_enable = true %}
-            {% for k, v in profiles.iteritems() if v is defined and v %}
+            {% for k, v in profiles.items() if v is defined and v %}
                {% if _utm_enable %}
                    {%set _utm_enable = false %}
                    "utm-status": "enable",
@@ -569,7 +569,7 @@ SET_FIREWALL_POLICY = """
                 'ssl-ssh-profile': ssl_ssh_profile
             } %}
             {% set _utm_enable = true %}
-            {% for k, v in profiles.iteritems() if v is defined and v is not none %}
+            {% for k, v in profiles.items() if v is defined and v is not none %}
                {% if _utm_enable %}
                    {%set _utm_enable = false %}
                    "utm-status": "enable",
@@ -1197,10 +1197,11 @@ GET_USER_LOCAL = """
 
 ADD_USER_LOCAL = """
 {
-     "path": "/api/v2/cmdb/user/local?vdom={{ vdom }}",
+    "path": "/api/v2/cmdb/user/local?vdom={{ vdom }}",
     "method": "POST",
     "body": {
         "json": {
+            "type": "password",
             "passwd": "{{ password }}",
             "two-factor":"{{ two_factor }}",
             "email-to":"{{ email }}",
@@ -1224,7 +1225,7 @@ PUT_USER_LOCAL = """
                 'email-to': email,
                 'sms-phone': mobile_number
             } %}
-            {% for k, v in options.iteritems() if v is defined and v %}
+            {% for k, v in options.items() if v is defined and v %}
                "{{ k }}": "{{ v }}",
             {% endfor %}
             "name": "{{ name }}"
