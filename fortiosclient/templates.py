@@ -1240,3 +1240,61 @@ DELETE_USER_LOCAL = """
     "method": "DELETE"
 }
 """
+
+GET_DNS_SERVER = """
+{
+    "path": "/api/v2/cmdb/system/dns-database/{{ name }}?vdom={{ vdom }}",
+    "method": "GET"
+}
+"""
+
+ADD_DNS_ENTRY = """
+{
+    "path": "/api/v2/cmdb/system/dns-database/{{ name }}/dns-entry?vdom={{ vdom }}",
+    "method": "POST",
+    "body": {
+        "json": {
+            {% set options = {
+                'status': status,
+                'ttl': ttl,
+                'type': type
+            } %}
+            {% for k, v in options.items() if v is defined and v %}
+               "{{ k }}": "{{ v }}",
+            {% endfor %}
+            "hostname": "{{ hostname }}",
+            "ip": "{{ ip }}"
+        }
+    }
+}
+
+"""
+
+DELETE_DNS_ENTRY = """
+{
+    "path": "/api/v2/cmdb/system/dns-database/{{ name }}/dns-entry/{{ id }}?vdom={{ vdom }}",
+    "method": "DELETE"
+}
+
+"""
+
+MODIFY_DNS_ENTRY = """
+{
+    "path": "/api/v2/cmdb/system/dns-database/{{ name }}/dns-entry/{{ id }}?vdom={{ vdom }}",
+    "method": "PUT",
+    "body": {
+        "json": {
+            {% set options = {
+                'status': status,
+                'ttl': ttl,
+                'type': type,
+                'hostname': hostname,
+                'ip': ip
+            } %}
+            {% for k, v in options.items() if v is defined and v %}
+               "{{ k }}": "{{ v }}"{{ "," if not loop.last }}
+            {% endfor %}
+        }
+    }
+}
+"""
