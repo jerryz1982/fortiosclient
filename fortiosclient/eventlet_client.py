@@ -34,7 +34,7 @@ LOG = logging.getLogger(__name__)
 class EventletApiClient(base.ApiClientBase):
     """Eventlet-based implementation of FortiOS ApiClient ABC."""
 
-    def __init__(self, api_providers, user, password,
+    def __init__(self, api_providers, user, password, token=None,
                  concurrent_connections=csts.DEFAULT_CONCURRENT_CONNECTIONS,
                  gen_timeout=csts.GENERATION_ID_TIMEOUT,
                  connect_timeout=csts.DEFAULT_CONNECT_TIMEOUT):
@@ -57,6 +57,7 @@ class EventletApiClient(base.ApiClientBase):
             self._set_provider_data(p, (eventlet.semaphore.Semaphore(1), None))
         self._user = user
         self._password = password
+        self._token = token
         self._concurrent_connections = concurrent_connections
         self._connect_timeout = connect_timeout
         self._config_gen = None
@@ -135,6 +136,8 @@ class EventletApiClient(base.ApiClientBase):
         return result_conn
 
     def _login(self, conn=None, headers=None):
+        if self._token:
+            return self._token
         '''Issue login request and update authentication cookie.'''
         cookie = None
         g = eventlet_request.LoginRequestEventlet(

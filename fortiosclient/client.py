@@ -40,7 +40,7 @@ LOG = logging.getLogger(__name__)
 class FortiosApiClient(eventlet_client.EventletApiClient):
     """The FortiOS API Client."""
 
-    def __init__(self, api_providers, user, password,
+    def __init__(self, api_providers, user, password, token=None,
                  concurrent_connections=csts.DEFAULT_CONCURRENT_CONNECTIONS,
                  gen_timeout=csts.GENERATION_ID_TIMEOUT,
                  connect_timeout=csts.DEFAULT_CONNECT_TIMEOUT,
@@ -70,6 +70,7 @@ class FortiosApiClient(eventlet_client.EventletApiClient):
         self.message = {}
         self._user = user
         self._password = password
+        self._token = token
 
     @staticmethod
     def _render(template, **message):

@@ -105,8 +105,12 @@ class ApiClientBase(object):
     def format_cookie(cookie):
         if not cookie:
             return None
+        fmt_headers = {}
+        # if token is used instead of password
+        if len(cookie) == 30:
+            fmt_headers["Authorization"] = "Bearer {}".format(cookie)
+            return fmt_headers
         try:
-            fmt_headers = {}
             cookies = Cookie.SimpleCookie(cookie)
             for key, morsel in six.iteritems(cookies):
                 if "ccsrftoken" in morsel.key:
