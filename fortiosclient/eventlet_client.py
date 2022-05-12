@@ -19,6 +19,12 @@ import time
 
 import eventlet
 eventlet.monkey_patch()
+
+try:
+    import Queue
+except Exception:
+    import queue as Queue
+
 try:
     from oslo_log import log as logging
 except Exception:
@@ -34,10 +40,11 @@ LOG = logging.getLogger(__name__)
 class EventletApiClient(base.ApiClientBase):
     """Eventlet-based implementation of FortiOS ApiClient ABC."""
 
-    def __init__(self, api_providers, user, password,
+    def __init__(self, api_providers, user, password, token=None,
                  concurrent_connections=csts.DEFAULT_CONCURRENT_CONNECTIONS,
                  gen_timeout=csts.GENERATION_ID_TIMEOUT,
-                 connect_timeout=csts.DEFAULT_CONNECT_TIMEOUT):
+                 connect_timeout=csts.DEFAULT_CONNECT_TIMEOUT,
+                 singlethread=False):
         '''Constructor
 
         :param api_providers: a list of tuples of the form: (host, port,
@@ -53,10 +60,12 @@ class EventletApiClient(base.ApiClientBase):
             api_providers = []
         self._api_providers = set([tuple(p) for p in api_providers])
         self._api_provider_data = {}  # tuple(semaphore, session_cookie)
+        self._singlethread = singlethread
         for p in self._api_providers:
-            self._set_provider_data(p, (eventlet.semaphore.Semaphore(1), None))
+            self._set_provider_data(p, self.get_default_data())
         self._user = user
         self._password = password
+        self._token = token
         self._concurrent_connections = concurrent_connections
         self._connect_timeout = connect_timeout
         self._config_gen = None
@@ -64,13 +73,23 @@ class EventletApiClient(base.ApiClientBase):
         self._gen_timeout = gen_timeout
 
         # Connection pool is a list of queues.
-        self._conn_pool = eventlet.queue.PriorityQueue()
+        if self._singlethread:
+            _queue = Queue.PriorityQueue
+        else:
+            _queue = eventlet.queue.PriorityQueue
+        self._conn_pool = _queue()
         self._next_conn_priority = 1
         for host, port, is_ssl in api_providers:
             for _ in range(concurrent_connections):
                 conn = self._create_connection(host, port, is_ssl)
                 self._conn_pool.put((self._next_conn_priority, conn))
                 self._next_conn_priority += 1
+
+    def get_default_data(self):
+        if self._singlethread:
+            return None, None
+        else:
+            return eventlet.semaphore.Semaphore(1), None
 
     def acquire_redirect_connection(self, conn_params, auto_login=True,
                                     headers=None):
@@ -135,6 +154,8 @@ class EventletApiClient(base.ApiClientBase):
         return result_conn
 
     def _login(self, conn=None, headers=None):
+        if self._token:
+            return self._token
         '''Issue login request and update authentication cookie.'''
         cookie = None
         g = eventlet_request.LoginRequestEventlet(
