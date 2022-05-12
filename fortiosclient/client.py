@@ -46,7 +46,8 @@ class FortiosApiClient(eventlet_client.EventletApiClient):
                  connect_timeout=csts.DEFAULT_CONNECT_TIMEOUT,
                  http_timeout=csts.DEFAULT_HTTP_TIMEOUT,
                  retries=csts.DEFAULT_RETRIES,
-                 redirects=csts.DEFAULT_REDIRECTS):
+                 redirects=csts.DEFAULT_REDIRECTS,
+                 singlethread=False):
         '''Constructor. Adds the following:
         :param api_providers: a list of tuples of the form: (host, port,
             is_ssl)
@@ -60,7 +61,8 @@ class FortiosApiClient(eventlet_client.EventletApiClient):
             api_providers, user, password,
             concurrent_connections=concurrent_connections,
             gen_timeout=gen_timeout,
-            connect_timeout=connect_timeout)
+            connect_timeout=connect_timeout,
+            singlethread=singlethread)
 
         self._request_timeout = http_timeout * retries
         self._http_timeout = http_timeout
@@ -71,6 +73,7 @@ class FortiosApiClient(eventlet_client.EventletApiClient):
         self._user = user
         self._password = password
         self._token = token
+        self._singlethread = singlethread
 
     @staticmethod
     def _render(template, **message):
@@ -94,7 +97,8 @@ class FortiosApiClient(eventlet_client.EventletApiClient):
         g = eventlet_request.GenericRequestEventlet(
             self, method, url, body, content_type, auto_login=True,
             http_timeout=self._http_timeout,
-            retries=self._retries, redirects=self._redirects)
+            retries=self._retries, redirects=self._redirects,
+            singlethread=self._singlethread)
         g.start()
         response = g.join()
 
