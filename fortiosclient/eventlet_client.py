@@ -18,7 +18,7 @@
 import time
 
 import eventlet
-eventlet.monkey_patch()
+eventlet.monkey_patch(thread=False, socket=False)
 
 try:
     import Queue
