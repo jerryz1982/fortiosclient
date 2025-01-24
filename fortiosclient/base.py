@@ -110,14 +110,17 @@ class ApiClientBase(object):
         if len(cookie) == 30:
             fmt_headers["Authorization"] = "Bearer {}".format(cookie)
             return fmt_headers
+        formatted_cookie = ""
         try:
             cookies = Cookie.SimpleCookie(cookie)
             for key, morsel in six.iteritems(cookies):
+                # samesite is not reserved in python3.6
+                if morsel.isReservedKey(key) or key.lower() == 'samesite':
+                    continue
                 if "ccsrftoken" in morsel.key:
-                    #morsel.coded_value = morsel.value
                     fmt_headers["X-CSRFTOKEN"] = morsel.value
-                    break
-            fmt_headers["Cookie"] = cookies.output(header="").lstrip()
+                formatted_cookie += f"{key}={morsel.value}; "
+            fmt_headers["Cookie"] = formatted_cookie.rstrip()
             return fmt_headers
         except (Cookie.CookieError, KeyError):
             LOG.error(_LE("The cookie ccsrftoken cannot be formatted"))
