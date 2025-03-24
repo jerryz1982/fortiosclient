@@ -1298,3 +1298,10 @@ MODIFY_DNS_ENTRY = """
     }
 }
 """
+
+GET_DNS_ENTRY = """
+{
+    "path": "/api/v2/cmdb/system/dns-database/{{ name }}/dns-entry/?vdom={{ vdom }}",
+    "method": "GET"
+}
+"""
