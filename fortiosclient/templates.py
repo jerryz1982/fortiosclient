@@ -1257,13 +1257,14 @@ ADD_DNS_ENTRY = """
             {% set options = {
                 'status': status,
                 'ttl': ttl,
+                'ip': ip,
+                'canonical-name': canonical_name,
                 'type': type
             } %}
             {% for k, v in options.items() if v is defined and v %}
                "{{ k }}": "{{ v }}",
             {% endfor %}
-            "hostname": "{{ hostname }}",
-            "ip": "{{ ip }}"
+            "hostname": "{{ hostname }}"
         }
     }
 }
