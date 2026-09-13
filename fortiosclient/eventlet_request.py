@@ -167,22 +167,46 @@ class EventletApiRequest(request.ApiRequest):
                 response = None
         return response
 
-
 class LoginRequestEventlet(EventletApiRequest):
-    '''Process a login request.'''
+    def __init__(self, client_obj, user, password,
+                 client_conn=None, headers=None,
+                 use_v2=False):
 
-    def __init__(self, client_obj, user, password, client_conn=None,
-                 headers=None):
         if headers is None:
             headers = {}
-        headers.update({"Content-Type": "application/x-www-form-urlencoded"})
-        message = client_obj._render(templates.LOGIN,
-                                     username=user,
-                                     secretkey=password)
-        body = message['body']
+
+        if use_v2:
+            headers.update({
+                "Content-Type": "application/json"
+            })
+
+            message = client_obj._render(
+                templates.LOGIN_V2,
+                username=user,
+                secretkey=password
+            )
+        else:
+            headers.update({
+                "Content-Type": "application/x-www-form-urlencoded"
+            })
+
+            message = client_obj._render(
+                templates.LOGIN,
+                username=user,
+                secretkey=password
+            )
+
+        body = message["body"]
+
         super(LoginRequestEventlet, self).__init__(
-            client_obj, message['path'], message['method'], body, headers,
-            auto_login=True, client_conn=client_conn)
+            client_obj,
+            message["path"],
+            message["method"],
+            body,
+            headers,
+            auto_login=True,
+            client_conn=client_conn
+        )
 
     def session_cookie(self):
         if self.successful():

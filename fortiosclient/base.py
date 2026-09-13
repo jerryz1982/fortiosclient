@@ -117,8 +117,10 @@ class ApiClientBase(object):
                 # samesite is not reserved in python3.6
                 if morsel.isReservedKey(key) or key.lower() == 'samesite':
                     continue
-                if "ccsrftoken" in morsel.key:
+                if ("ccsrftoken" in morsel.key.lower() or
+                        "ccsrf_token" in morsel.key.lower()):
                     fmt_headers["X-CSRFTOKEN"] = morsel.value
+
                 formatted_cookie += f"{key}={morsel.value}; "
             fmt_headers["Cookie"] = formatted_cookie.rstrip()
             return fmt_headers

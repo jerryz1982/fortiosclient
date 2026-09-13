@@ -47,7 +47,8 @@ class FortiosApiClient(eventlet_client.EventletApiClient):
                  http_timeout=csts.DEFAULT_HTTP_TIMEOUT,
                  retries=csts.DEFAULT_RETRIES,
                  redirects=csts.DEFAULT_REDIRECTS,
-                 singlethread=False):
+                 singlethread=False,
+                 auth_mode="legacy"):
         '''Constructor. Adds the following:
         :param api_providers: a list of tuples of the form: (host, port,
             is_ssl)
@@ -56,13 +57,16 @@ class FortiosApiClient(eventlet_client.EventletApiClient):
             controller in the cluster)
         :param retries: the number of http/https request to retry.
         :param redirects: the number of concurrent connections.
+        :param auth_mode: authentication method, either "legacy" or "v2".
+            Defaults to "legacy" for backward compatibility.
         '''
         super(FortiosApiClient, self).__init__(
             api_providers, user, password,
             concurrent_connections=concurrent_connections,
             gen_timeout=gen_timeout,
             connect_timeout=connect_timeout,
-            singlethread=singlethread)
+            singlethread=singlethread,
+            auth_mode=auth_mode)
 
         self._request_timeout = http_timeout * retries
         self._http_timeout = http_timeout

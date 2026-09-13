@@ -129,12 +129,20 @@ class ApiRequest(object):
                         headers['Authorization'] = cookie['Authorization']
 
                 try:
+
                     if self._body:
+
                         if (self._url ==
-                                jsonutils.loads(templates.LOGIN)['path']):
+                               jsonutils.loads(templates.LOGIN_V2)["path"]):
+                            body = jsonutils.dumps(self._body)
+
+                        elif (self._url ==
+                                 jsonutils.loads(templates.LOGIN)["path"]):
                             body = urlparse.urlencode(self._body)
+
                         else:
                             body = jsonutils.dumps(self._body)
+
                     else:
                         body = None
                     LOG.debug("Issuing request: self._method = [%(method)s], "
@@ -151,6 +159,7 @@ class ApiRequest(object):
 
                 response = conn.getresponse()
                 response.body = response.read()
+
                 if six.PY2:
                     response.headers = response.getheaders()
                 elapsed_time = time.time() - issued_time
