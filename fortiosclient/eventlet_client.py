@@ -30,6 +30,11 @@ try:
 except Exception:
     import logging
 
+try:
+    from oslo_serialization import jsonutils
+except Exception:
+    import json as jsonutils
+
 from fortiosclient import base
 from fortiosclient.common import constants as csts
 from fortiosclient import eventlet_request
@@ -44,7 +49,9 @@ class EventletApiClient(base.ApiClientBase):
                  concurrent_connections=csts.DEFAULT_CONCURRENT_CONNECTIONS,
                  gen_timeout=csts.GENERATION_ID_TIMEOUT,
                  connect_timeout=csts.DEFAULT_CONNECT_TIMEOUT,
-                 singlethread=False):
+                 singlethread=False,
+                 auth_mode="legacy"):
+
         '''Constructor
 
         :param api_providers: a list of tuples of the form: (host, port,
@@ -66,6 +73,14 @@ class EventletApiClient(base.ApiClientBase):
         self._user = user
         self._password = password
         self._token = token
+
+        if auth_mode not in ("legacy", "v2"):
+            raise ValueError(
+                "auth_mode must be 'legacy' or 'v2'"
+            )
+
+        self._auth_mode = auth_mode
+
         self._concurrent_connections = concurrent_connections
         self._connect_timeout = connect_timeout
         self._config_gen = None
@@ -153,25 +168,70 @@ class EventletApiClient(base.ApiClientBase):
                 self._wait_for_login(result_conn, headers)
         return result_conn
 
+    def _do_login(self, conn=None, headers=None, use_v2=False):
+        g = eventlet_request.LoginRequestEventlet(
+            self,
+            self._user,
+            self._password,
+            conn,
+            headers,
+            use_v2=use_v2
+        )
+
+        g.start()
+        ret = g.join()
+
+        if isinstance(ret, Exception):
+            raise ret
+
+        if not ret:
+            return None, "failed"
+
+        if use_v2:
+            try:
+                result = jsonutils.loads(ret.body)
+            except Exception:
+                result = {}
+
+            if result.get("status_message") != "LOGIN_SUCCESS":
+                LOG.error(
+                    "FortiGate V2 authentication failed: %s (%s)",
+                    result.get("status_message"),
+                    result.get("error_message")
+                )
+                return None, "auth_failed"
+
+        set_cookies = [
+            value
+            for key, value in ret.getheaders()
+            if key.lower() == "set-cookie"
+        ]
+
+        if set_cookies:
+            cookie = "; ".join(
+                value.split(";", 1)[0]
+                for value in set_cookies
+            )
+            return cookie, "success"
+
+        return None, "failed"
+
     def _login(self, conn=None, headers=None):
         if self._token:
             return self._token
-        '''Issue login request and update authentication cookie.'''
-        cookie = None
-        g = eventlet_request.LoginRequestEventlet(
-            self, self._user, self._password, conn, headers)
-        g.start()
-        ret = g.join()
-        if ret:
-            if isinstance(ret, Exception):
-                LOG.error('Login error "%s"', ret)
-                raise ret
 
-            cookie = ret.getheader("Set-Cookie")
-            if cookie:
-                LOG.debug("Saving new authentication cookie '%s'", cookie)
+        use_v2 = (self._auth_mode == "v2")
 
-        return cookie
+        cookie, status = self._do_login(
+            conn=conn,
+            headers=headers,
+            use_v2=use_v2
+        )
+
+        if status == "success":
+            return cookie
+
+        return None
 
 # Register as subclass.
 base.ApiClientBase.register(EventletApiClient)

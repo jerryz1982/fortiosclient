@@ -34,6 +34,17 @@ LOGIN = """
 }
 """
 
+LOGIN_V2 = """
+{
+    "path": "/api/v2/authentication",
+    "method": "POST",
+    "body": {
+        "username": "{{ username }}",
+        "password": "{{ secretkey }}"
+    }
+}
+"""
+
 RELOGIN = """login?redir=%2fapi%2fv2"""
 
 LOGOUT = """
